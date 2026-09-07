@@ -1580,8 +1580,15 @@ export function makeBackendClient(apiKey: string | null = null, workspaceName: s
       prompt: string;
       /** Template variable name -> trace extraction path (e.g. `output.output`). */
       variables: Record<string, string>;
-      /** Output schema the judge must answer with; each entry becomes a score name. */
-      schema: Array<{ name: string; type: 'BOOLEAN' | 'INTEGER' | 'DOUBLE' | 'STRING'; description: string }>;
+      /**
+       * Output schema the judge must answer with; each entry becomes a score name.
+       *
+       * The three types are the whole of the backend's `LlmAsJudgeOutputSchemaType`
+       * enum. A wider union here would not be permissive, it would be a lie: Jackson
+       * refuses the enum value and the POST fails with a 4xx that names neither the
+       * field nor the caller, so the type is kept exactly as narrow as the contract.
+       */
+      schema: Array<{ name: string; type: 'BOOLEAN' | 'INTEGER' | 'DOUBLE'; description: string }>;
       triggerScope?: 'production' | 'experiment' | 'both';
       enabled?: boolean;
     }): Promise<string> {
